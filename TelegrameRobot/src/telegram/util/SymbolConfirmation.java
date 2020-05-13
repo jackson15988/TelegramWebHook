@@ -23,6 +23,8 @@ public class SymbolConfirmation {
 			returnStr = "USDCHF";
 		}else if(sybol.contains("EURGBP")) {
 			returnStr = "EURGBP";
+		}else if(sybol.contains("USDJPY")) {
+			returnStr = "USDJPY";
 		}
 
 
