@@ -1,0 +1,53 @@
+package telegram.util;
+
+public class SymbolConfirmation {
+
+	public static String checkSymbol(String sybol) {
+
+		String returnStr = "";
+		if(sybol.contains("EURUSD")) {
+			returnStr = "EURUSD";
+		}else if(sybol.contains("EURJPY")) {
+			returnStr = "EURJPY";
+		}else if(sybol.contains("AUDNZD")) {
+			returnStr = "AUDNZD";
+		}else if(sybol.contains("GBPAUD")) {
+			returnStr = "GBPAUD";
+		}else if(sybol.contains("GBPUSD")) {
+			returnStr = "GBPUSD";
+		}else if(sybol.contains("AUDJPY")) {
+			returnStr = "AUDJPY";
+		}else if(sybol.contains("GBPJPY")) {
+			returnStr = "GBPJPY";
+		}else if(sybol.contains("USDCHF")) {
+			returnStr = "USDCHF";
+		}else if(sybol.contains("EURGBP")) {
+			returnStr = "EURGBP";
+		}
+
+
+	
+
+	return returnStr;
+
+	}
+
+	public static boolean directionArrow(String direction) {
+		boolean isCheckOk = false;
+
+		switch (direction) {
+		case "⬆️":
+			isCheckOk = true;
+			break;
+		case "⬇️":
+			isCheckOk = true;
+			break;
+		default:
+			break;
+		}
+
+		return isCheckOk;
+
+	}
+
+}
