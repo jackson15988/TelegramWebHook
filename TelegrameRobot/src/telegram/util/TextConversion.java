@@ -192,4 +192,69 @@ public class TextConversion {
 
 	}
 
+	public static String InstantProfitsReplce(String message) {
+		message = message.substring(message.indexOf("Signal"), message.length());
+
+		if (message.contains("♻️SWING TRADE♻️")) {
+			message = message.substring(0, message.indexOf("♻️SWING TRADE♻️"));
+		}
+
+		if (message.contains("🛳 MID TERM TRADE")) {
+			message = message.substring(0, message.indexOf("♻️SWING TRADE♻️"));
+		}
+
+		return message;
+
+	}
+
+	public static JSONObject InstantProfitsJsobject(String str) {
+		JSONObject jsobj = new JSONObject();
+		JSONObject resultObj = new JSONObject();
+//		 "[{\"type\":\"success\",\"message\":\"\"},{\"id\":\"14058\",\"symbol\":\"EURUSD\",\"
+//		 + ""tp\":\"1.2518\",\"sl\":\"1.1911\",\"direction\":\"buy\",\"risk\":\"2\"},{\"id\":\"14059\",\"
+//		 		+ ""symbol\":\"USDCAD\",\"tp\":\"1.2420\",\"sl\":\"1.2930\",\"direction\":\"buy\",\"risk\":\"2\"}]";
+
+		if (str.contains("BUY NOW")) {
+			jsobj.put("direction", "0"); // 0 buy 1 sell 2 buystop 3 sellstop 4 buylimit 5 selllimit
+		} else if (str.contains("SELL NOW")) {
+			jsobj.put("direction", "1");
+		} else if (str.contains("BUY STOP")) {
+			jsobj.put("direction", "2");
+		} else if (str.contains("SELL STOP")) {
+			jsobj.put("direction", "3");
+		} else if (str.contains("BUY LIMIT")) {
+			jsobj.put("direction", "4");
+		} else if (str.contains("SELL LIMIT")) {
+			jsobj.put("direction", "5");
+		}
+		// 處理價格
+		String tpStr = str.substring(str.indexOf("Take Profit"), str.indexOf("Stop Loss"));
+		
+		String price = priceConversion(tpStr);
+
+		// 處理價格
+
+		resultObj.put("result", jsobj);
+
+		return resultObj;
+
+	}
+
+	/**
+	 * @author admin 丟一個模糊價格近來 如果包含英文也近來進行轉換
+	 * @param strMessage
+	 * @return
+	 */
+	public static String priceConversion(String strMessage) {
+		String[] doubSpulit = strMessage.split("([-a-zA-Z]\\s*)++");
+		String price = doubSpulit[1];
+		// 如果有冒號 則進行處理
+		if (price.contains(":")) {
+			price = price.replace(":", " ");
+		}
+		price = price.trim();
+		return price;
+
+	}
+
 }

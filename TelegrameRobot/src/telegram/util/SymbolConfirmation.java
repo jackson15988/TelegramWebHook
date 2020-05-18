@@ -25,7 +25,16 @@ public class SymbolConfirmation {
 			returnStr = "EURGBP";
 		}else if(sybol.contains("USDJPY")) {
 			returnStr = "USDJPY";
+		}else if(sybol.contains("EURAUD")) {
+			returnStr = "EURAUD";
+		}else if(sybol.contains("EURNZD")) {
+		returnStr = "EURNZD";
+		}else if(sybol.contains("NZDUSD")) {
+			returnStr = "NZDUSD";
 		}
+		
+
+		
 
 
 	
