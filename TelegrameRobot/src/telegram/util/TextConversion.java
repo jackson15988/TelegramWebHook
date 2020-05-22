@@ -212,9 +212,11 @@ public class TextConversion {
 		JSONObject jsobj = new JSONObject();
 		JSONObject resultObj = new JSONObject();
 		// {"result":["{\"symbol\":\"EURUSD\",\"price\":\"1.15445\",\"tp\":\"1.15445\",\"sl\":\"1.15554\",\"date\":\"2020/05/20\",\"strategy\":\"forex\",\"remarks\":\"這是一筆測試單\",\"direction\":\"3\"}"]}
-
+		String symbol = SymbolConfirmation.checkSymbol(str);
+		jsobj.put("symbol", symbol);
 		if (str.contains("BUY NOW")) {
-			jsobj.put("direction", "0"); // 0 buy 1 sell 2 buystop 3 sellstop 4  // buylimit 5 selllimit
+			jsobj.put("direction", "0"); // 0 buy 1 sell 2 buystop 3 sellstop 4
+											// // buylimit 5 selllimit
 		} else if (str.contains("SELL NOW")) {
 			jsobj.put("direction", "1");
 		} else if (str.contains("BUY STOP")) {
@@ -256,8 +258,7 @@ public class TextConversion {
 		jsobj.put("strategy", "forex");
 		jsobj.put("remarks", "Instant_Profits");
 
-		
-		// 處理價格		
+		// 處理價格
 		resultObj.put("result", jsobj);
 
 		return resultObj;
