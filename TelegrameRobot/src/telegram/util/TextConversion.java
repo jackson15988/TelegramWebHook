@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -210,30 +211,53 @@ public class TextConversion {
 	public static JSONObject InstantProfitsJsobject(String str) {
 		JSONObject jsobj = new JSONObject();
 		JSONObject resultObj = new JSONObject();
-//		 "[{\"type\":\"success\",\"message\":\"\"},{\"id\":\"14058\",\"symbol\":\"EURUSD\",\"
-//		 + ""tp\":\"1.2518\",\"sl\":\"1.1911\",\"direction\":\"buy\",\"risk\":\"2\"},{\"id\":\"14059\",\"
-//		 		+ ""symbol\":\"USDCAD\",\"tp\":\"1.2420\",\"sl\":\"1.2930\",\"direction\":\"buy\",\"risk\":\"2\"}]";
+		// {"result":["{\"symbol\":\"EURUSD\",\"price\":\"1.15445\",\"tp\":\"1.15445\",\"sl\":\"1.15554\",\"date\":\"2020/05/20\",\"strategy\":\"forex\",\"remarks\":\"這是一筆測試單\",\"direction\":\"3\"}"]}
 
 		if (str.contains("BUY NOW")) {
-			jsobj.put("direction", "0"); // 0 buy 1 sell 2 buystop 3 sellstop 4 buylimit 5 selllimit
+			jsobj.put("direction", "0"); // 0 buy 1 sell 2 buystop 3 sellstop 4  // buylimit 5 selllimit
 		} else if (str.contains("SELL NOW")) {
 			jsobj.put("direction", "1");
 		} else if (str.contains("BUY STOP")) {
 			jsobj.put("direction", "2");
+			String priceStr = str.substring(str.indexOf("BUY STOP"), str.indexOf("Take Profit"));
+			priceStr = priceConversion(priceStr);
+			jsobj.put("price", priceStr);
 		} else if (str.contains("SELL STOP")) {
 			jsobj.put("direction", "3");
+			String priceStr = str.substring(str.indexOf("SELL STOP"), str.indexOf("Take Profit"));
+			priceStr = priceConversion(priceStr);
+			jsobj.put("price", priceStr);
 		} else if (str.contains("BUY LIMIT")) {
 			jsobj.put("direction", "4");
+			String priceStr = str.substring(str.indexOf("BUY LIMIT"), str.indexOf("Take Profit"));
+			priceStr = priceConversion(priceStr);
+			jsobj.put("price", priceStr);
 		} else if (str.contains("SELL LIMIT")) {
 			jsobj.put("direction", "5");
+			String priceStr = str.substring(str.indexOf("SELL LIMIT"), str.indexOf("Take Profit"));
+			priceStr = priceConversion(priceStr);
+			jsobj.put("price", priceStr);
 		}
 		// 處理價格
 		String tpStr = str.substring(str.indexOf("Take Profit"), str.indexOf("Stop Loss"));
+		String tp = priceConversion(tpStr);
+		System.out.println("取得tp價格:" + tp);
+		jsobj.put("tp", tp);
+
+		String slStr = str.substring(str.indexOf("Stop Loss"), str.indexOf("Stop Loss") + 20);
+		String sl = priceConversion(slStr);
+		System.out.println("取得sl價格:" + sl);
+		jsobj.put("sl", sl);
+
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		String strDate = sdFormat.format(date);
+		jsobj.put("date", strDate);
+		jsobj.put("strategy", "forex");
+		jsobj.put("remarks", "Instant_Profits");
+
 		
-		String price = priceConversion(tpStr);
-
-		// 處理價格
-
+		// 處理價格		
 		resultObj.put("result", jsobj);
 
 		return resultObj;

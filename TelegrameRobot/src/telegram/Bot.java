@@ -68,12 +68,14 @@ public class Bot extends TelegramLongPollingBot {
 					&& update.getMessage().getText().contains("📡")) {
 
 				String message = TextConversion.vip240Signal(update.getMessage().getText());
-//			String message = update.getMessage().getText();
+				// String message = update.getMessage().getText();
 
-//			//自己群
-//			LineNotification.callEvent("cNWEW5pf8tkvmytyhkeAh28Hmj82krq6PnxgDy3iYGG", message);
+				// //自己群
+				// LineNotification.callEvent("cNWEW5pf8tkvmytyhkeAh28Hmj82krq6PnxgDy3iYGG",
+				// message);
 				// M大群
-//			LineNotification.callEvent("nVxs1v7eFKEKXXV4rPsLnU4LzHLmhtqS4X3ZNbvPDD5", message);
+				// LineNotification.callEvent("nVxs1v7eFKEKXXV4rPsLnU4LzHLmhtqS4X3ZNbvPDD5",
+				// message);
 
 				try {
 
@@ -99,9 +101,9 @@ public class Bot extends TelegramLongPollingBot {
 							break;
 						}
 					}
-//				out.close();
-//				in.close();
-//				socket.close();
+					// out.close();
+					// in.close();
+					// socket.close();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -128,21 +130,14 @@ public class Bot extends TelegramLongPollingBot {
 
 					// 寫資訊給客戶端
 					String line = reader.readLine();
-					while (!"end".equalsIgnoreCase(line) && !"null".equals(line) && line != null) {
 
 						JSONObject obj = TextConversion.InstantProfitsJsobject(update.getMessage().getText());
-//					if (obj != null && !obj.isEmpty()) {
-						out.println(message);
-
-						out.flush();
-						// 將從鍵盤獲取的資訊給到伺服器
-						// 顯示輸入的資訊
-						line = reader.readLine();
-						break;
-					}
-//				out.close();
-//				in.close();
-//				socket.close();
+						if (obj != null && !obj.isEmpty()) {
+							out.println(obj.toJSONString());
+							out.flush();
+							line = reader.readLine();
+						}
+					
 				} catch (Exception e) {
 					System.out.println(e);
 					e.printStackTrace();
@@ -162,7 +157,7 @@ public class Bot extends TelegramLongPollingBot {
 	public String getBotToken() {
 		// TODO Auto-generated method stub
 		return "889507584:AAHsoTN22rdIznIVre6MZI05cPT47AuoZEs";
-//		return "967307466:AAEOhsdpXtIQWeLx8pHJbiDzw3VEFZKxQpM";
+		// return "967307466:AAEOhsdpXtIQWeLx8pHJbiDzw3VEFZKxQpM";
 	}
 
 	private static boolean isjson(String string) {
@@ -183,13 +178,8 @@ public class Bot extends TelegramLongPollingBot {
 	public boolean replyResult(Update update, String message) {
 
 		SendMessage sendMessage = new SendMessage().setChatId("-1001377728083");
-		String messages =
-				  "💹Signal Alert\r\n" 
-				+ "EURUSD - BUY NOW(市價執行) 1.410724\r\n"
-				+ "Take Profit(止盈): 1.41015\r\n" 
-				+ "Stop Loss(止損): 1.4040\r\n" + "\r\n" 
-				+ "🚀 SHORT TERM TRAD" + "\r\n"
-				+ "投资一定有风险，外汇投资有赚有赔，不得作为下单之依据。";
+		String messages = "💹Signal Alert\r\n" + "EURUSD - BUY NOW(市價執行) 1.410724\r\n" + "Take Profit(止盈): 1.41015\r\n"
+				+ "Stop Loss(止損): 1.4040\r\n" + "\r\n" + "🚀 SHORT TERM TRAD" + "\r\n" + "投资一定有风险，外汇投资有赚有赔，不得作为下单之依据。";
 
 		sendMessage.setText(messages);
 		try {
