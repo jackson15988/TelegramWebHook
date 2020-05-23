@@ -33,8 +33,15 @@ public class SymbolConfirmation {
 			returnStr = "NZDUSD";
 		}else if(sybol.contains("USDCAD")) {
 			returnStr = "USDCAD";
+		}else if(sybol.contains("NZDCAD")) {
+			returnStr = "NZDCAD";
+		}else if(sybol.contains("AUDCAD")) {
+			returnStr = "AUDCAD";
+		}else if(sybol.contains("GOLD")) {
+			returnStr = "GOLD";
 		}
 		
+	
 
 		
 

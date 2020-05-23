@@ -214,28 +214,28 @@ public class TextConversion {
 		// {"result":["{\"symbol\":\"EURUSD\",\"price\":\"1.15445\",\"tp\":\"1.15445\",\"sl\":\"1.15554\",\"date\":\"2020/05/20\",\"strategy\":\"forex\",\"remarks\":\"這是一筆測試單\",\"direction\":\"3\"}"]}
 		String symbol = SymbolConfirmation.checkSymbol(str);
 		jsobj.put("symbol", symbol);
-		if (str.contains("BUY NOW")) {
+		if (str.contains("BUY NOW") || str.contains("BUY AGAIN")) {
 			jsobj.put("direction", "0"); // 0 buy 1 sell 2 buystop 3 sellstop 4
 											// // buylimit 5 selllimit
-		} else if (str.contains("SELL NOW")) {
+		} else if (str.contains("SELL NOW") || str.contains("SELL AGAIN")) {
 			jsobj.put("direction", "1");
 		} else if (str.contains("BUY STOP")) {
-			jsobj.put("direction", "2");
+			jsobj.put("direction", "4");
 			String priceStr = str.substring(str.indexOf("BUY STOP"), str.indexOf("Take Profit"));
 			priceStr = priceConversion(priceStr);
 			jsobj.put("price", priceStr);
 		} else if (str.contains("SELL STOP")) {
-			jsobj.put("direction", "3");
+			jsobj.put("direction", "5");
 			String priceStr = str.substring(str.indexOf("SELL STOP"), str.indexOf("Take Profit"));
 			priceStr = priceConversion(priceStr);
 			jsobj.put("price", priceStr);
 		} else if (str.contains("BUY LIMIT")) {
-			jsobj.put("direction", "4");
+			jsobj.put("direction", "2");
 			String priceStr = str.substring(str.indexOf("BUY LIMIT"), str.indexOf("Take Profit"));
 			priceStr = priceConversion(priceStr);
 			jsobj.put("price", priceStr);
 		} else if (str.contains("SELL LIMIT")) {
-			jsobj.put("direction", "5");
+			jsobj.put("direction", "3");
 			String priceStr = str.substring(str.indexOf("SELL LIMIT"), str.indexOf("Take Profit"));
 			priceStr = priceConversion(priceStr);
 			jsobj.put("price", priceStr);
@@ -251,16 +251,26 @@ public class TextConversion {
 		System.out.println("取得sl價格:" + sl);
 		jsobj.put("sl", sl);
 
+		JSONArray jsar = new JSONArray();
+
 		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date();
 		String strDate = sdFormat.format(date);
 		jsobj.put("date", strDate);
 		jsobj.put("strategy", "forex");
 		jsobj.put("remarks", "Instant_Profits");
-
+		jsar.add(jsobj.toJSONString());
 		// 處理價格
-		resultObj.put("result", jsobj);
+		resultObj.put("result", jsar);
 
+		String ms5Str = MD5Tools.MD5(resultObj.toJSONString());
+		if (onlyJson.get(ms5Str) == null) {
+			System.out.println("判斷訊號為唯一乾淨訊號");
+			onlyJson.put(ms5Str, jsobj.toString());
+		} else {
+			System.out.println("ERROR !! 訊號有錯誤的重複的訊號,強制把訊號轉為null處理");
+			resultObj = null;
+		}
 		return resultObj;
 
 	}
