@@ -131,19 +131,52 @@ public class Bot extends TelegramLongPollingBot {
 					// 寫資訊給客戶端
 					String line = reader.readLine();
 
-						JSONObject obj = TextConversion.InstantProfitsJsobject(update.getMessage().getText());
-						if (obj != null && !obj.isEmpty()) {
-							out.println(obj.toJSONString());
-							out.flush();
-							line = reader.readLine();
-						}
-					
+					JSONObject obj = TextConversion.InstantProfitsJsobject(update.getMessage().getText());
+					if (obj != null && !obj.isEmpty()) {
+						out.println(obj.toJSONString());
+						out.flush();
+						line = reader.readLine();
+					}
+
 				} catch (Exception e) {
 					System.out.println(e);
 					e.printStackTrace();
 				}
 
 			}
+
+			// 處理VIP 👑 BinaryProfitSignals  二元期權訊號
+			if (update != null && update.getMessage().getText() != null
+					&& MessageFilter.binaryProfitSignals(update.getMessage().getText())) {
+				
+				
+				String message = update.getMessage().getText();
+				try {
+
+					StringBuilder sb = new StringBuilder();
+					InputStream is = new ByteArrayInputStream(message.getBytes());
+					BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+					PrintWriter out = new PrintWriter(socket.getOutputStream());
+					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+
+					// 寫資訊給客戶端
+					String line = reader.readLine();
+
+					JSONObject obj = TextConversion.binaryProfitSignals(update.getMessage().getText());
+					if (obj != null && !obj.isEmpty()) {
+						out.println(obj.toJSONString());
+						out.flush();
+						line = reader.readLine();
+					}
+
+				} catch (Exception e) {
+					System.out.println(e);
+					e.printStackTrace();
+				}
+				
+			}
+
 		}
 	};
 

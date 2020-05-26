@@ -21,4 +21,18 @@ public class MessageFilter {
 		// TODO Auto-generated method stub
 		return isContains;
 	}
+
+	public static boolean binaryProfitSignals(String text) {
+		boolean isContains = false;
+		text = text.toUpperCase();
+		if (!text.contains("WIN") || !text.contains("LOST")) {
+			if (text.contains("WAIT CONFIRM") && text.contains("CALL")) {
+				isContains = true;
+			} else if (text.contains("WAIT CONFIRM") && text.contains("PUT")) {
+				isContains = true;
+			}
+		}
+		// TODO Auto-generated method stub
+		return isContains;
+	}
 }

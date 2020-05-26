@@ -275,6 +275,61 @@ public class TextConversion {
 
 	}
 
+	public static JSONObject binaryProfitSignals(String str) {
+
+		JSONObject jsobj = new JSONObject();
+		JSONObject resultObj = new JSONObject();
+
+		String symbol = SymbolConfirmation.checkSymbol(str);
+
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd");
+		Date date = new Date();
+		String strDate = sdFormat.format(date);
+		jsobj.put("symbol", symbol);
+		jsobj.put("time", "");
+		str = str.toUpperCase();
+		if (str.contains("5 MIN")) {
+			jsobj.put("expireMinuteTime", "5");
+			jsobj.put("expireHourTime", "0");
+		} else if (str.contains("10 MIN")) {
+			jsobj.put("expireMinuteTime", "10");
+			jsobj.put("expireHourTime", "0");
+		} else if (str.contains("15 MIN")) {
+			jsobj.put("expireMinuteTime", "15");
+			jsobj.put("expireHourTime", "0");
+		} else if (str.contains("30 MIN")) {
+			jsobj.put("expireMinuteTime", "30");
+			jsobj.put("expireHourTime", "0");
+		} else if (str.contains("60 MIN")) {
+			jsobj.put("expireMinuteTime", "0");
+			jsobj.put("expireHourTime", "1");
+		} else if (str.contains("7 MIN")) {
+			jsobj.put("expireMinuteTime", "7");
+			jsobj.put("expireHourTime", "0");
+		} else if (str.contains("8 MIN")) {
+			jsobj.put("expireMinuteTime", "8");
+			jsobj.put("expireHourTime", "0");
+		}
+
+		if (str.contains("PUT")) {
+			jsobj.put("direction", "PUT");
+		} else {
+			jsobj.put("direction", "CALL");
+		}
+		jsobj.put("martingale", "0");
+		jsobj.put("strategy", "binaryOption_C");
+		jsobj.put("strDate", strDate);
+
+		JSONArray jsar = new JSONArray();
+		jsar.add(jsobj.toJSONString());
+		// 處理價格
+		resultObj.put("result", jsar);
+//		GBP USD PUT 5 MIN WAIT CONFIRM
+
+		return resultObj;
+
+	}
+
 	/**
 	 * @author admin 丟一個模糊價格近來 如果包含英文也近來進行轉換
 	 * @param strMessage
