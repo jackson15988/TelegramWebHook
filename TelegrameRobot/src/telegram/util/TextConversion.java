@@ -245,8 +245,20 @@ public class TextConversion {
 		String tp = priceConversion(tpStr);
 		System.out.println("取得tp價格:" + tp);
 		jsobj.put("tp", tp);
-
-		String slStr = str.substring(str.indexOf("Stop Loss"), str.indexOf("Stop Loss") + 20);
+		int slIndex;
+		String slStr = "";
+		if (str.contains("🛥")) {
+			slIndex = str.indexOf("🛥");
+			slStr = str.substring(str.indexOf("Stop Loss"), slIndex);
+		} else if (str.contains("♻️")) {
+			slIndex = str.indexOf("♻️");
+			slStr = str.substring(str.indexOf("Stop Loss"), slIndex);
+		} else if (str.contains("🚀")) {
+			slIndex = str.indexOf("🚀");
+			slStr = str.substring(str.indexOf("Stop Loss"), slIndex);
+		} else {
+			slStr = str.substring(str.indexOf("Stop Loss"), str.indexOf("Stop Loss") + 20);
+		}
 		String sl = priceConversion(slStr);
 		System.out.println("取得sl價格:" + sl);
 		jsobj.put("sl", sl);
