@@ -39,6 +39,8 @@ public class SymbolConfirmation {
 			returnStr = "AUDCAD";
 		}else if(sybol.contains("GOLD")) {
 			returnStr = "GOLD";
+		}else if(sybol.contains("NZDJPY")) {
+			returnStr = "NZDJPY";
 		}
 		
 	
