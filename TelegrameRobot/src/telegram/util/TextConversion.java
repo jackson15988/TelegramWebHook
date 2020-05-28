@@ -292,12 +292,10 @@ public class TextConversion {
 		JSONObject jsobj = new JSONObject();
 		JSONObject resultObj = new JSONObject();
 
-		String symbol = SymbolConfirmation.checkSymbol(str);
-
 		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
 		String strDate = sdFormat.format(date);
-		jsobj.put("symbol", symbol);
+
 		jsobj.put("time", "");
 		str = str.toUpperCase();
 		if (str.contains("5 MIN")) {
@@ -323,12 +321,22 @@ public class TextConversion {
 			jsobj.put("expireHourTime", "0");
 		}
 
+		int symbolindexEnd;
 		if (str.contains("PUT")) {
+			symbolindexEnd = str.indexOf("PUT");
 			jsobj.put("direction", "PUT");
 		} else {
+			symbolindexEnd = str.indexOf("CALL");
 			jsobj.put("direction", "CALL");
 		}
+		String symbol = str.substring(0, symbolindexEnd);
+		symbol = symbol.replace(" ", "").trim();
+
+		symbol = SymbolConfirmation.checkSymbol(symbol);
+		jsobj.put("symbol", symbol);
+
 		jsobj.put("martingale", "0");
+		jsobj.put("status", "wait");
 		jsobj.put("strategy", "binaryOption_C");
 		jsobj.put("strDate", strDate);
 

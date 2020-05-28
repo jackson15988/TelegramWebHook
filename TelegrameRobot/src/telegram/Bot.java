@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -21,12 +22,14 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import telegram.util.MessageFilter;
 import telegram.util.TextConversion;
 
 public class Bot extends TelegramLongPollingBot {
+	HashMap<Integer, JSONObject> binaryProfitSignalsMap = new HashMap<>();
 	Socket socket = null;
 
 	@Override
@@ -145,11 +148,10 @@ public class Bot extends TelegramLongPollingBot {
 
 			}
 
-			// 處理VIP 👑 BinaryProfitSignals  二元期權訊號
+			// 處理VIP 👑 BinaryProfitSignals 二元期權訊號
 			if (update != null && update.getMessage().getText() != null
 					&& MessageFilter.binaryProfitSignals(update.getMessage().getText())) {
-				
-				
+
 				String message = update.getMessage().getText();
 				try {
 
@@ -159,11 +161,14 @@ public class Bot extends TelegramLongPollingBot {
 
 					PrintWriter out = new PrintWriter(socket.getOutputStream());
 					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+					update.getMessage().getMessageId();
 
 					// 寫資訊給客戶端
 					String line = reader.readLine();
 
 					JSONObject obj = TextConversion.binaryProfitSignals(update.getMessage().getText());
+					// 意思是 先把一筆進入暫存
+					binaryProfitSignalsMap.put(update.getMessage().getMessageId(), obj);
 					if (obj != null && !obj.isEmpty()) {
 						out.println(obj.toJSONString());
 						out.flush();
@@ -174,7 +179,67 @@ public class Bot extends TelegramLongPollingBot {
 					System.out.println(e);
 					e.printStackTrace();
 				}
-				
+
+			}
+			String goMessage = "";
+			if (update.getMessage() != null && update.getMessage().getText() != null) {
+				goMessage = update.getMessage().getText().toUpperCase();
+			}
+
+			// 處理VIP 👑 BinaryProfitSignals 二元期權訊號
+			if (update != null && update.getMessage().getText() != null && goMessage.contains("GO")
+					|| goMessage.contains("NO")) {
+
+				String message = update.getMessage().getText();
+				try {
+
+					StringBuilder sb = new StringBuilder();
+					InputStream is = new ByteArrayInputStream(message.getBytes());
+					BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+					PrintWriter out = new PrintWriter(socket.getOutputStream());
+					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+
+					int mesid = update.getMessage().getMessageId();
+					mesid = mesid - 1;
+
+					JSONObject catchMapOBJ = binaryProfitSignalsMap.get(mesid);
+
+					JSONArray jsonAry = new JSONArray();
+					JSONObject obj = new JSONObject();
+					JSONObject outData = new JSONObject();
+
+					if (catchMapOBJ != null) {
+						jsonAry = (JSONArray) catchMapOBJ.get("result");
+
+						JSONObject jsOBj = new JSONObject();
+						jsOBj = (JSONObject) jsOBj.parse(jsonAry.get(0).toString());
+
+						String symbol = (String) jsOBj.get("symbol");
+						String direction = (String) jsOBj.get("direction");
+						outData.put("symbol", symbol);
+						outData.put("direction", direction);
+						outData.put("strategy", "binaryOption_C");
+
+						JSONArray jsar = new JSONArray();
+						jsar.add(outData.toJSONString());
+						// 處理價格
+						obj.put("result", jsar);
+					}
+					// 寫資訊給客戶端
+					String line = reader.readLine();
+
+					if (obj != null && !obj.isEmpty()) {
+						out.println(obj.toJSONString());
+						out.flush();
+						line = reader.readLine();
+					}
+
+				} catch (Exception e) {
+					System.out.println(e);
+					e.printStackTrace();
+				}
+
 			}
 
 		}
@@ -190,6 +255,8 @@ public class Bot extends TelegramLongPollingBot {
 	public String getBotToken() {
 		// TODO Auto-generated method stub
 		return "889507584:AAHsoTN22rdIznIVre6MZI05cPT47AuoZEs";
+		// 以下是 二元机器人
+//		return "1110609497:AAH_tlzhgpyQrT_u3yf0yxS38abRKW_xXyc";
 		// return "967307466:AAEOhsdpXtIQWeLx8pHJbiDzw3VEFZKxQpM";
 	}
 
@@ -219,6 +286,7 @@ public class Bot extends TelegramLongPollingBot {
 			sendMessage(sendMessage);
 		} catch (TelegramApiException e) {
 			System.out.println("回傳TG群時候，發生錯誤" + e);
+
 		}
 		return false;
 
