@@ -17,6 +17,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.telegram.telegrambots.api.methods.GetFile;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.PhotoSize;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -26,6 +27,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import telegram.util.MessageFilter;
+import telegram.util.RedisUtil;
 import telegram.util.TextConversion;
 
 public class Bot extends TelegramLongPollingBot {
@@ -119,6 +121,7 @@ public class Bot extends TelegramLongPollingBot {
 					&& MessageFilter.InstantProfitsFilter(update.getMessage().getText())) {
 				String message = TextConversion.InstantProfitsReplce(update.getMessage().getText());
 
+				Integer messageID = update.getMessage().getMessageId();
 				System.out.println(message);
 				replyResult(update, message);
 
@@ -134,7 +137,7 @@ public class Bot extends TelegramLongPollingBot {
 					// 寫資訊給客戶端
 					String line = reader.readLine();
 
-					JSONObject obj = TextConversion.InstantProfitsJsobject(update.getMessage().getText());
+					JSONObject obj = TextConversion.InstantProfitsJsobject(update.getMessage().getText(), messageID);
 					if (obj != null && !obj.isEmpty()) {
 						out.println(obj.toJSONString());
 						out.flush();
@@ -146,6 +149,65 @@ public class Bot extends TelegramLongPollingBot {
 					e.printStackTrace();
 				}
 
+			}
+
+			// 處理外匯訊號修改InstantProfitsModifyFilter
+			if (update != null && update.getMessage().getText() != null
+					&& MessageFilter.InstantProfitsModifyFilter(update.getMessage().getText())) {
+				Message messageObj = update.getMessage().getReplyToMessage();
+				String message = update.getMessage().getText();
+
+				JSONObject resultObj = new JSONObject();
+				// 代表有
+
+				try {
+
+					if (messageObj != null) {
+
+						StringBuilder sb = new StringBuilder();
+						InputStream is = new ByteArrayInputStream(message.getBytes());
+						BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+						PrintWriter out = new PrintWriter(socket.getOutputStream());
+						BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+						update.getMessage().getMessageId();
+
+						// 寫資訊給客戶端
+						String line = reader.readLine();
+
+						Integer messageID = messageObj.getMessageId();
+						JSONObject jsOBj = RedisUtil.getRedis(String.valueOf(messageID));
+
+						String orderMagicNumber = (String) jsOBj.get("orderMagicNumber");
+						String symbol = (String) jsOBj.get("symbol");
+						String strategy = (String) jsOBj.get("strategy");
+
+						String status = "1";
+
+						// 先進行清空之前的資料
+						jsOBj.clear();
+
+						jsOBj.put("symbol", symbol);
+						jsOBj.put("orderMagicNumber", orderMagicNumber);
+						jsOBj.put("status", status); // 0執行下單 1 關閉訂單 2 修改訂單
+						jsOBj.put("strategy", strategy); 
+						jsOBj.put("tp", "");
+						jsOBj.put("sl", "");
+
+						JSONArray jsar = new JSONArray();
+						jsar.add(jsOBj.toJSONString());
+						// 處理價格
+						resultObj.put("result", jsar);
+						System.out.println("查看回復訊息ID為:" + messageObj.getMessageId() + ":" + messageObj.getText());
+						if (resultObj != null && !resultObj.isEmpty()) {
+							out.println(resultObj.toJSONString());
+							out.flush();
+							line = reader.readLine();
+						}
+					}
+				} catch (Exception e) {
+					System.out.println("修改訂單狀態發生錯誤:" + e);
+				}
 			}
 
 			// 處理VIP 👑 BinaryProfitSignals 二元期權訊號

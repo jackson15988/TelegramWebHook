@@ -208,7 +208,7 @@ public class TextConversion {
 
 	}
 
-	public static JSONObject InstantProfitsJsobject(String str) {
+	public static JSONObject InstantProfitsJsobject(String str, Integer messageID) {
 		JSONObject jsobj = new JSONObject();
 		JSONObject resultObj = new JSONObject();
 		// {"result":["{\"symbol\":\"EURUSD\",\"price\":\"1.15445\",\"tp\":\"1.15445\",\"sl\":\"1.15554\",\"date\":\"2020/05/20\",\"strategy\":\"forex\",\"remarks\":\"這是一筆測試單\",\"direction\":\"3\"}"]}
@@ -270,15 +270,25 @@ public class TextConversion {
 		String strDate = sdFormat.format(date);
 		jsobj.put("date", strDate);
 		jsobj.put("strategy", "forex");
+		jsobj.put("status", "0");
 		jsobj.put("remarks", "Instant_Profits");
+
+		long timeStampSec = System.currentTimeMillis() / 1000;
+		String magicNumber = String.format("%010d", timeStampSec);
+		magicNumber = magicNumber.replaceFirst("^0*", ""); 
+		
+		jsobj.put("orderMagicNumber", String.valueOf(magicNumber));
+
 		jsar.add(jsobj.toJSONString());
+
 		// 處理價格
 		resultObj.put("result", jsar);
 
 		String ms5Str = MD5Tools.MD5(resultObj.toJSONString());
 		if (onlyJson.get(ms5Str) == null) {
-			System.out.println("判斷訊號為唯一乾淨訊號");
 			onlyJson.put(ms5Str, jsobj.toString());
+			RedisUtil.setRedis(String.valueOf(messageID), resultObj);
+
 		} else {
 			System.out.println("ERROR !! 訊號有錯誤的重複的訊號,強制把訊號轉為null處理");
 			resultObj = null;
