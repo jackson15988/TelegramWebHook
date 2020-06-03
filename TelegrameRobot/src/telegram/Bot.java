@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import telegram.util.MessageFilter;
+import telegram.util.OCRAsyncTask;
 import telegram.util.RedisUtil;
 import telegram.util.TextConversion;
 
@@ -62,6 +63,42 @@ public class Bot extends TelegramLongPollingBot {
 					String filePath = getFile(getFile).getFileUrl(getBotToken());
 					URL url = new URL(filePath);
 					System.out.println(url);
+					try {
+						// 開始OCR
+						String ocrStr = OCRAsyncTask.sendPost(true, url.toString(), "eng");
+						JSONObject jsonObj = new JSONObject();
+						JSONArray jsAry = new JSONArray();
+
+						jsonObj = (JSONObject) jsonObj.parse(ocrStr);
+//						jsAry = (JSONArray) jsonObj.get("ParsedResults");
+//						jsonObj = (JSONObject) jsAry.get(0);
+//
+//						String LineStr = (String) jsonObj.get("ParsedText");
+//						if (LineStr != null) {
+//							// 如果裡面包含 .... 才做
+//							jsonObj = (JSONObject) jsonObj.get("TextOverlay");
+//							jsAry = (JSONArray) jsonObj.get("Lines");
+//							
+//							
+//							String dir = "";
+//							
+//							for (Object object : jsAry) {
+//								jsonObj = (JSONObject) jsonObj.parse(object.toString());
+//								String lineText = (String) jsonObj.get("LineText");
+//								if (lineText.toUpperCase().contains("BUY")) {
+//
+//								} else if (lineText.toUpperCase().contains("SELL")) {
+//
+//								}
+//								System.out.println(object);
+//							}
+//
+//						}
+
+					} catch (Exception e) {
+						System.out.println("辨別結果發生錯誤:" + e);
+					}
+
 				} catch (MalformedURLException e1) {
 					System.out.println("轉換圖片上出現錯誤狀況:" + e1);
 				} catch (TelegramApiException e) {
@@ -190,7 +227,7 @@ public class Bot extends TelegramLongPollingBot {
 						jsOBj.put("symbol", symbol);
 						jsOBj.put("orderMagicNumber", orderMagicNumber);
 						jsOBj.put("status", status); // 0執行下單 1 關閉訂單 2 修改訂單
-						jsOBj.put("strategy", strategy); 
+						jsOBj.put("strategy", strategy);
 						jsOBj.put("tp", "");
 						jsOBj.put("sl", "");
 
