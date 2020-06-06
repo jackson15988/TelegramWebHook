@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,6 +31,7 @@ import com.alibaba.fastjson.JSONObject;
 import telegram.util.MessageFilter;
 import telegram.util.OCRAsyncTask;
 import telegram.util.RedisUtil;
+import telegram.util.SymbolConfirmation;
 import telegram.util.TextConversion;
 
 public class Bot extends TelegramLongPollingBot {
@@ -63,6 +66,7 @@ public class Bot extends TelegramLongPollingBot {
 					String filePath = getFile(getFile).getFileUrl(getBotToken());
 					URL url = new URL(filePath);
 					System.out.println(url);
+
 					try {
 						// 開始OCR
 						String ocrStr = OCRAsyncTask.sendPost(true, url.toString(), "eng");
@@ -70,30 +74,96 @@ public class Bot extends TelegramLongPollingBot {
 						JSONArray jsAry = new JSONArray();
 
 						jsonObj = (JSONObject) jsonObj.parse(ocrStr);
-//						jsAry = (JSONArray) jsonObj.get("ParsedResults");
-//						jsonObj = (JSONObject) jsAry.get(0);
-//
-//						String LineStr = (String) jsonObj.get("ParsedText");
-//						if (LineStr != null) {
-//							// 如果裡面包含 .... 才做
-//							jsonObj = (JSONObject) jsonObj.get("TextOverlay");
-//							jsAry = (JSONArray) jsonObj.get("Lines");
-//							
-//							
-//							String dir = "";
-//							
-//							for (Object object : jsAry) {
-//								jsonObj = (JSONObject) jsonObj.parse(object.toString());
-//								String lineText = (String) jsonObj.get("LineText");
-//								if (lineText.toUpperCase().contains("BUY")) {
-//
-//								} else if (lineText.toUpperCase().contains("SELL")) {
-//
-//								}
-//								System.out.println(object);
-//							}
-//
-//						}
+						jsAry = (JSONArray) jsonObj.get("ParsedResults");
+						jsonObj = (JSONObject) jsAry.get(0);
+
+						String LineStr = (String) jsonObj.get("ParsedText");
+						if (LineStr != null) {
+							
+							PrintWriter out = new PrintWriter(socket.getOutputStream());
+
+							BufferedReader in = new BufferedReader(
+									new InputStreamReader(socket.getInputStream(), "utf-8"));
+							// 如果裡面包含 .... 才做
+							jsonObj = (JSONObject) jsonObj.get("TextOverlay");
+							jsAry = (JSONArray) jsonObj.get("Lines");
+
+							String tpStr = "";
+							String symbol = "";
+							String direction = "";
+							String price = "";
+							String slStr = "";
+							for (Object object : jsAry) {
+								jsonObj = (JSONObject) jsonObj.parse(object.toString());
+								String lineText = (String) jsonObj.get("LineText");
+								if (lineText.toUpperCase().contains("BUY")) {
+									direction = "BUY";
+									lineText = lineText.replace("/", "");
+									symbol = SymbolConfirmation.checkSymbol(lineText);
+									price = lineText.toUpperCase();
+									price = price.substring(price.indexOf("BUY:"), price.length());
+									price = TextConversion.priceConversion(price);
+									System.out.println("獲取到價格:" + price);
+									System.out.println("獲取到方向:" + direction);
+									System.out.println("獲取商品:" + symbol);
+								} else if (lineText.toUpperCase().contains("SELL")) {
+									direction = "SELL";
+									lineText = lineText.replace("/", "");
+									symbol = SymbolConfirmation.checkSymbol(lineText);
+									price = lineText.toUpperCase();
+									price = price.substring(price.indexOf("SELL:"), price.length());
+									price = TextConversion.priceConversion(price);
+									System.out.println("獲取到價格:" + price);
+									System.out.println("獲取到方向:" + direction);
+									System.out.println("獲取商品:" + symbol);
+
+								} else if (lineText.toUpperCase().contains("TP")) {
+									lineText = lineText.toUpperCase();
+
+									if (lineText.contains("SI")) {
+										tpStr = lineText.substring(lineText.indexOf("TP:"), lineText.indexOf("SI:"));
+										tpStr = TextConversion.priceConversion(tpStr);
+
+										slStr = lineText.substring(lineText.indexOf("SI:"), lineText.length());
+										slStr = TextConversion.priceConversion(slStr);
+
+										System.out.println("獲取TP價格:" + tpStr);
+										System.out.println("獲取SL價格:" + slStr);
+									}
+								}
+							}
+							SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+							Date date = new Date();
+							String strDate = sdFormat.format(date);
+
+							JSONObject jsobj = new JSONObject();
+
+							jsobj.put("symbol", symbol);
+							jsobj.put("direction", direction);
+							jsobj.put("price", price);
+							jsobj.put("tp", tpStr);
+							jsobj.put("sl", slStr);
+							jsobj.put("date", strDate);
+							jsobj.put("strategy", "forex");
+							jsobj.put("status", "0");
+							jsobj.put("remarks", "+30pip");
+
+							long timeStampSec = System.currentTimeMillis() / 1000;
+							String magicNumber = String.format("%010d", timeStampSec);
+							magicNumber = magicNumber.replaceFirst("^0*", "");
+							jsobj.put("orderMagicNumber", String.valueOf(magicNumber));
+
+							JSONArray jsar = new JSONArray();
+							jsar.add(jsobj.toJSONString());
+							JSONObject resultObj = new JSONObject();
+							resultObj.put("result", jsar);
+
+							if (resultObj != null && !resultObj.isEmpty()) {
+								out.println(resultObj.toJSONString());
+								out.flush();
+							}
+
+						}
 
 					} catch (Exception e) {
 						System.out.println("辨別結果發生錯誤:" + e);
