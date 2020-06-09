@@ -31,7 +31,7 @@ public class Commands {
     /// Cancel command
     public static final String cancelCommand = commandInitChar + "cancel";
     /// Delete command
-    public static final String deleteCommand = commandInitChar + "delete";
+//    public static final String deleteCommand = commandInitChar + "delete";
     /// List command
     public static final String listCommand = commandInitChar + "list";
     /// Start directions command

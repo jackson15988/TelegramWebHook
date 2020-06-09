@@ -2,7 +2,6 @@ package telegram;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,9 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.telegram.telegrambots.api.methods.GetFile;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.PhotoSize;
 import org.telegram.telegrambots.api.objects.Update;
@@ -97,7 +94,7 @@ public class Bot extends TelegramLongPollingBot {
 								jsonObj = (JSONObject) jsonObj.parse(object.toString());
 								String lineText = (String) jsonObj.get("LineText");
 								if (lineText.toUpperCase().contains("BUY")) {
-									direction = "BUY";
+									direction = "0";
 									lineText = lineText.replace("/", "");
 									symbol = SymbolConfirmation.checkSymbol(lineText);
 									price = lineText.toUpperCase();
@@ -107,7 +104,7 @@ public class Bot extends TelegramLongPollingBot {
 									System.out.println("獲取到方向:" + direction);
 									System.out.println("獲取商品:" + symbol);
 								} else if (lineText.toUpperCase().contains("SELL")) {
-									direction = "SELL";
+									direction = "1";
 									lineText = lineText.replace("/", "");
 									symbol = SymbolConfirmation.checkSymbol(lineText);
 									price = lineText.toUpperCase();
@@ -144,7 +141,7 @@ public class Bot extends TelegramLongPollingBot {
 							jsobj.put("tp", tpStr);
 							jsobj.put("sl", slStr);
 							jsobj.put("date", strDate);
-							jsobj.put("strategy", "forex");
+							jsobj.put("strategy", "forex_B");
 							jsobj.put("status", "0");
 							jsobj.put("remarks", "+30pip");
 
@@ -230,7 +227,7 @@ public class Bot extends TelegramLongPollingBot {
 
 				Integer messageID = update.getMessage().getMessageId();
 				System.out.println(message);
-				replyResult(update, message);
+//				replyResult(update, message);
 
 				try {
 
@@ -423,7 +420,7 @@ public class Bot extends TelegramLongPollingBot {
 	@Override
 	public String getBotToken() {
 		// TODO Auto-generated method stub
-		return "889507584:AAHsoTN22rdIznIVre6MZI05cPT47AuoZEs";
+		return "1158141918:AAEIhLXjVf7kU7U5WqaWo2zMyuFC9zYejjI";
 		// 以下是 二元机器人
 //		return "1110609497:AAH_tlzhgpyQrT_u3yf0yxS38abRKW_xXyc";
 		// return "967307466:AAEOhsdpXtIQWeLx8pHJbiDzw3VEFZKxQpM";
@@ -438,27 +435,6 @@ public class Bot extends TelegramLongPollingBot {
 		}
 	}
 
-	/**
-	 * @author admin 機器人回復特定群組
-	 * @param update
-	 * @param message
-	 * @return
-	 */
-	public boolean replyResult(Update update, String message) {
 
-		SendMessage sendMessage = new SendMessage().setChatId("-1001377728083");
-		String messages = "💹Signal Alert\r\n" + "EURUSD - BUY NOW(市價執行) 1.410724\r\n" + "Take Profit(止盈): 1.41015\r\n"
-				+ "Stop Loss(止損): 1.4040\r\n" + "\r\n" + "🚀 SHORT TERM TRAD" + "\r\n" + "投资一定有风险，外汇投资有赚有赔，不得作为下单之依据。";
-
-		sendMessage.setText(messages);
-		try {
-			sendMessage(sendMessage);
-		} catch (TelegramApiException e) {
-			System.out.println("回傳TG群時候，發生錯誤" + e);
-
-		}
-		return false;
-
-	}
 
 }

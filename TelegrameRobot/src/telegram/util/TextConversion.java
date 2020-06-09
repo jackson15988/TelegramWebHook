@@ -269,7 +269,7 @@ public class TextConversion {
 		Date date = new Date();
 		String strDate = sdFormat.format(date);
 		jsobj.put("date", strDate);
-		jsobj.put("strategy", "forex");
+		jsobj.put("strategy", "forex_A");
 		jsobj.put("status", "0");
 		jsobj.put("remarks", "Instant_Profits");
 

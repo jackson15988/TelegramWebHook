@@ -61,6 +61,8 @@ public class SymbolConfirmation {
 			returnStr = "NZDCHF";
 		} else if (sybol.contains("XAUUSD")) {
 			returnStr = "XAUUSD";
+		} else if (sybol.contains("CADJPY")) {
+			returnStr = "CADJPY";
 		}
 
 		return returnStr;
