@@ -18,11 +18,14 @@ public class MessageFilter {
 		if (text.contains("Signal Alert")) {
 			isContains = true;
 		}
+
+		if (text.toUpperCase().equals("SWING")) {
+			isContains = false;
+		}
 		// TODO Auto-generated method stub
 		return isContains;
 	}
 
-	
 	/**
 	 * @author admin 這裡新增一些事件 用來很明確的關閉訂單
 	 * @param text
@@ -31,12 +34,11 @@ public class MessageFilter {
 	public static boolean InstantProfitsModifyFilter(String text) {
 		boolean isContains = false;
 		text = text.toUpperCase();
-		
-				
-		if(text.contains("CLOSE") && text.contains("IN") && text.contains("PROFIT") && !text.contains("ENTRY")) {
+
+		if (text.contains("CLOSE") && text.contains("IN") && text.contains("PROFIT") && !text.contains("ENTRY")) {
 			isContains = true;
 		}
-	
+
 		return isContains;
 	}
 
