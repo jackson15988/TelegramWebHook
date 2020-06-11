@@ -51,7 +51,7 @@ public class Bot extends TelegramLongPollingBot {
 					e.printStackTrace();
 				}
 			}
-
+///
 			List<PhotoSize> photos = update.getMessage().getPhoto();
 			if (photos != null && photos.size() != 0) {
 				System.out.println("接收到圖片-請稍後");
