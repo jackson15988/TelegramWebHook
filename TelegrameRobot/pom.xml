@@ -15,7 +15,7 @@
 		<telegrambots.version>2.4.4.5</telegrambots.version>
 		<json.version>20160810</json.version>
 		<jsoup.version>1.10.2</jsoup.version>
-		<mysql.version>6.0.6</mysql.version>
+		<mysql.version>8.0.16</mysql.version>
 		<commonsio.version>2.5</commonsio.version>
 	</properties>
 
