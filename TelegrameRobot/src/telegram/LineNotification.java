@@ -56,7 +56,7 @@ public class LineNotification {
 
 	public static void main(String[] args) {
 
-		callEvent("nVxs1v7eFKEKXXV4rPsLnU4LzHLmhtqS4X3ZNbvPDD5",
+		callEvent("UYTInHauFwQlBlrJFqzWiaNJd5LHHTHbj4abvqxzen4",
 				"公告:測試123");
 
 	}

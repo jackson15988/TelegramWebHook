@@ -1,8 +1,10 @@
 package telegram.vo;
 
 import org.telegram.telegrambots.api.objects.Chat;
+import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import telegram.dto.ChatDto;
+import telegram.dto.MessageDto;
 
 public class ConvertRoomInfo {
 
@@ -14,5 +16,13 @@ public class ConvertRoomInfo {
         return data;
     }
 
-    ;
+
+    public static MessageDto getMessageInfo(Update update) {
+        Message mesObj = update.getMessage();
+        MessageDto mesDto = new MessageDto();
+        mesDto.setPictureReplyMessage(mesObj.getCaption());
+        return mesDto;
+    }
+
+    ;;
 }

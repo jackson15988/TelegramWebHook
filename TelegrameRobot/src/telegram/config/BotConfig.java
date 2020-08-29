@@ -1,4 +1,4 @@
-package telegram;
+package telegram.config;
 
 /**
  * @author Ruben Bermudez
