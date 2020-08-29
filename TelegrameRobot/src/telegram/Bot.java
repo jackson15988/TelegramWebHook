@@ -25,11 +25,13 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import telegram.dto.ChatDto;
 import telegram.util.MessageFilter;
 import telegram.util.OCRAsyncTask;
 import telegram.util.RedisUtil;
 import telegram.util.SymbolConfirmation;
 import telegram.util.TextConversion;
+import telegram.vo.ConvertRoomInfo;
 
 public class Bot extends TelegramLongPollingBot {
 	HashMap<Integer, JSONObject> binaryProfitSignalsMap = new HashMap<>();
@@ -37,9 +39,12 @@ public class Bot extends TelegramLongPollingBot {
 
 	@Override
 	public void onUpdateReceived(Update update) {
+		 //當收到訊號之後 先行判斷是否為空值
 		if (update.getMessage() != null) {
-			System.out.println(update.getMessage().getFrom().getFirstName() + "#: " + update.getMessage().getText());
+			//房間相關資訊放置於此
+			ChatDto chatDto = ConvertRoomInfo.getRoomInfo(update);
 
+			System.out.println(update.getMessage().getFrom().getFirstName() + "#: " + update.getMessage().getText());
 			if (socket == null) {
 				try {
 					socket = new Socket("45.32.49.87", 9877);
@@ -221,7 +226,7 @@ public class Bot extends TelegramLongPollingBot {
 			}
 
 			// 處理外匯訊號
-			if (update != null && update.getMessage().getText() != null
+/*			if (update != null && update.getMessage().getText() != null
 					&& MessageFilter.InstantProfitsFilter(update.getMessage().getText())) {
 				String message = TextConversion.InstantProfitsReplce(update.getMessage().getText());
 
@@ -253,21 +258,18 @@ public class Bot extends TelegramLongPollingBot {
 					e.printStackTrace();
 				}
 
-			}
+			}*/
 
 			// 處理外匯訊號修改InstantProfitsModifyFilter
 			if (update != null && update.getMessage().getText() != null
 					&& MessageFilter.InstantProfitsModifyFilter(update.getMessage().getText())) {
 				Message messageObj = update.getMessage().getReplyToMessage();
 				String message = update.getMessage().getText();
-
 				JSONObject resultObj = new JSONObject();
 				// 代表有
 
 				try {
-
 					if (messageObj != null) {
-
 						StringBuilder sb = new StringBuilder();
 						InputStream is = new ByteArrayInputStream(message.getBytes());
 						BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -314,7 +316,7 @@ public class Bot extends TelegramLongPollingBot {
 				}
 			}
 
-			// 處理VIP 👑 BinaryProfitSignals 二元期權訊號
+		/*	// 處理VIP 👑 BinaryProfitSignals 二元期權訊號
 			if (update != null && update.getMessage().getText() != null
 					&& MessageFilter.binaryProfitSignals(update.getMessage().getText())) {
 
@@ -346,13 +348,13 @@ public class Bot extends TelegramLongPollingBot {
 					e.printStackTrace();
 				}
 
-			}
-			String goMessage = "";
+			}*/
+		/*	String goMessage = "";
 			if (update.getMessage() != null && update.getMessage().getText() != null) {
 				goMessage = update.getMessage().getText().toUpperCase();
-			}
+			}*/
 
-			// 處理VIP 👑 BinaryProfitSignals 二元期權訊號
+		/*	// 處理VIP 👑 BinaryProfitSignals 二元期權訊號
 			if (update != null && update.getMessage().getText() != null && goMessage.contains("GO")
 					|| goMessage.contains("NO")) {
 
@@ -406,7 +408,7 @@ public class Bot extends TelegramLongPollingBot {
 					e.printStackTrace();
 				}
 
-			}
+			}*/
 
 		}
 	};
