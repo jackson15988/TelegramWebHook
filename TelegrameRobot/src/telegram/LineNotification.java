@@ -56,8 +56,8 @@ public class LineNotification {
 
 	public static void main(String[] args) {
 
-		callEvent("UYTInHauFwQlBlrJFqzWiaNJd5LHHTHbj4abvqxzen4",
-				"公告:測試123");
+		callEvent("4MAoJUWyFHeL41rpUqHqJ5E2OY6l6MHUNxo3zooB9Nx",
+				"烙史的功能 哀  領22K的我 好可憐");
 
 	}
 }

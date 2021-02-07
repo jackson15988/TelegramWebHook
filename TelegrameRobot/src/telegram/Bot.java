@@ -25,6 +25,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import telegram.bo.BestForexSignalsPipsBo;
 import telegram.bo.KojoForex;
 import telegram.bo.ThirtyPips;
 import telegram.dto.ChatDto;
@@ -42,18 +43,18 @@ public class Bot extends TelegramLongPollingBot {
     PrintWriter out;
     BufferedReader in;
 
-    {
+  /*  {
         try {
-            if (socket == null) {
+           *//* if (socket == null) {
                 System.out.print("執行");
                 socket = new Socket("45.32.49.87", 9877);
             }
             out = new PrintWriter(socket.getOutputStream());
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));*//*
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     @Override
@@ -68,7 +69,7 @@ public class Bot extends TelegramLongPollingBot {
             List<PhotoSize> photos = update.getMessage().getPhoto();
 
             System.out.println(update.getMessage().getFrom().getFirstName() + "#: " + update.getMessage().getText());
-            if (socket == null) {
+          /*  if (socket == null) {
                 try {
                     socket = new Socket("45.32.49.87", 9877);
                 } catch (UnknownHostException e) {
@@ -78,7 +79,7 @@ public class Bot extends TelegramLongPollingBot {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-            }
+            }*/
 ///
             //投資共享-FOREX/GOLD 黃金群組
             if ("-1001309319906".equals(chatDto.getChatId())) {
@@ -303,6 +304,13 @@ public class Bot extends TelegramLongPollingBot {
 
 			}*/
 
+        }
+
+
+        //Best Forex Signals Pips
+        //https://t.me/BestForexSignalsPips  渠道LINKED
+        if (update.getChannelPost().getChatId().equals("-1001292630883")) {
+            BestForexSignalsPipsBo.run(update);
         }
     }
 
