@@ -1,41 +1,27 @@
 package telegram;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.telegram.telegrambots.api.methods.GetFile;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.PhotoSize;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
 import telegram.bo.BestForexSignalsPipsBo;
 import telegram.bo.KojoForex;
 import telegram.bo.ThirtyPips;
 import telegram.dto.ChatDto;
 import telegram.dto.MessageDto;
 import telegram.util.MessageFilter;
-import telegram.util.OCRAsyncTask;
 import telegram.util.RedisUtil;
-import telegram.util.SymbolConfirmation;
 import telegram.util.TextConversion;
 import telegram.vo.ConvertRoomInfo;
+
+import java.io.*;
+import java.net.Socket;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
     HashMap<Integer, JSONObject> binaryProfitSignalsMap = new HashMap<>();
@@ -87,7 +73,7 @@ public class Bot extends TelegramLongPollingBot {
                 // +30 pips 渠道
             } else if ("-1001469221445".equals(chatDto.getChatId())) {
                 if (photos != null && photos.size() != 0) {
-                    System.out.println("+30 pips 渠道接收到圖片中請稍後");
+                    System.out.println("+ ProFxSignals 渠道接收到圖片中請稍後");
                     PhotoSize photo = photos.get(photos.size() - 1);
                     String id = photo.getFileId();
                     try {
@@ -116,6 +102,8 @@ public class Bot extends TelegramLongPollingBot {
                     out.println(sendSocketObj.toJSONString());
                     out.flush();
                 }
+            } else if (update.getChannelPost().getChatId().equals("-1001292630883")) {
+                    BestForexSignalsPipsBo.run(update);
             }
 
 
@@ -307,11 +295,7 @@ public class Bot extends TelegramLongPollingBot {
         }
 
 
-        //Best Forex Signals Pips
-        //https://t.me/BestForexSignalsPips  渠道LINKED
-        if (update.getChannelPost().getChatId().equals("-1001292630883")) {
-            BestForexSignalsPipsBo.run(update);
-        }
+
     }
 
     ;

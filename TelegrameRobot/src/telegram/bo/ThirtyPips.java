@@ -71,7 +71,7 @@ public class ThirtyPips {
                     System.out.println("獲取到方向:" + direction);
                     System.out.println("獲取商品:" + symbol);
 
-                } else if (lineText.toUpperCase().contains("TP")) {
+                } else if (lineText.toUpperCase().contains("TP") || lineText.toUpperCase().contains("rp") ) {
                     lineText = lineText.toUpperCase();
 
                     if (lineText.contains("SI")) {
