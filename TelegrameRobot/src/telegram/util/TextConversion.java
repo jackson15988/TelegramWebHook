@@ -1,13 +1,14 @@
 package telegram.util;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 public class TextConversion {
 
@@ -216,7 +217,7 @@ public class TextConversion {
 		jsobj.put("symbol", symbol);
 		if (str.contains("BUY NOW") || str.contains("BUY AGAIN")) {
 			jsobj.put("direction", "0"); // 0 buy 1 sell 2 buystop 3 sellstop 4
-											// // buylimit 5 selllimit
+			// // buylimit 5 selllimit
 		} else if (str.contains("SELL NOW") || str.contains("SELL AGAIN")) {
 			jsobj.put("direction", "1");
 		} else if (str.contains("BUY STOP")) {
@@ -275,8 +276,8 @@ public class TextConversion {
 
 		long timeStampSec = System.currentTimeMillis() / 1000;
 		String magicNumber = String.format("%010d", timeStampSec);
-		magicNumber = magicNumber.replaceFirst("^0*", ""); 
-		
+		magicNumber = magicNumber.replaceFirst("^0*", "");
+
 		jsobj.put("orderMagicNumber", String.valueOf(magicNumber));
 
 		jsar.add(jsobj.toJSONString());
@@ -366,15 +367,34 @@ public class TextConversion {
 	 * @return
 	 */
 	public static String priceConversion(String strMessage) {
+		strMessage = strMessage.trim();
+		String price = "";
 		String[] doubSpulit = strMessage.split("([-a-zA-Z]\\s*)++");
-		String price = doubSpulit[1];
-		// 如果有冒號 則進行處理
-		if (price.contains(":")) {
-			price = price.replace(":", " ");
+		if(doubSpulit.length != 0) {
+			 price = doubSpulit[1];
+			if (price.contains(":")) {
+				price = price.replace(":", " ");
+			}
 		}
 		price = price.trim();
 		return price;
+	}
 
+	/**
+	 * 計算止損價格，例如SL 50: 計算當前價格 1.6511
+	 * @param sl    止損
+	 * @param price 價格
+	 * @param decimalPlaces 小數點幾位數
+	 * @return
+	 */
+	public static BigDecimal  calculateStopLossPrice(Integer sl , BigDecimal price  ,Integer decimalPlaces ){
+
+		if(decimalPlaces == 5){
+			return price.subtract(BigDecimal.valueOf(sl*0.0001)).setScale(5, RoundingMode.HALF_DOWN);
+		}else if(decimalPlaces == 6){
+			return price.subtract(BigDecimal.valueOf(sl*0.001)).setScale(5, RoundingMode.HALF_DOWN);
+		}
+		return null;
 	}
 
 }

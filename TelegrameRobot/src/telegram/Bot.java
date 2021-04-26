@@ -29,18 +29,18 @@ public class Bot extends TelegramLongPollingBot {
     PrintWriter out;
     BufferedReader in;
 
-  /*  {
+    {
         try {
-           *//* if (socket == null) {
+            if (socket == null) {
                 System.out.print("執行");
-                socket = new Socket("45.32.49.87", 9877);
+                socket = new Socket("127.0.0.1", 21);
             }
             out = new PrintWriter(socket.getOutputStream());
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));*//*
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }*/
+    }
 
 
     @Override
@@ -70,10 +70,10 @@ public class Bot extends TelegramLongPollingBot {
             //投資共享-FOREX/GOLD 黃金群組
             if ("-1001309319906".equals(chatDto.getChatId())) {
 
-                // +30 pips 渠道
+                // ProFxSignals pips 渠道
             } else if ("-1001469221445".equals(chatDto.getChatId())) {
                 if (photos != null && photos.size() != 0) {
-                    System.out.println("+ ProFxSignals 渠道接收到圖片中請稍後");
+                    System.out.println("ProFxSignals 渠道接收到圖片中請稍後");
                     PhotoSize photo = photos.get(photos.size() - 1);
                     String id = photo.getFileId();
                     try {
@@ -82,15 +82,14 @@ public class Bot extends TelegramLongPollingBot {
                         String filePath = getFile(getFile).getFileUrl(getBotToken());
                         URL url = new URL(filePath);
                         JSONObject sendSocketObj = ThirtyPips.getThirtyPips(url.toString());
-                      /*
                         PrintWriter out = new PrintWriter(socket.getOutputStream());
-                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));*/
-                        if (sendSocketObj != null && !sendSocketObj.isEmpty()) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+                        if (out != null && !sendSocketObj.isEmpty()) {
                             out.println(sendSocketObj.toJSONString());
                             out.flush();
                         }
                     } catch (Exception e) {
-                        System.out.print("+30 pips 發生錯誤 : " + e);
+                        System.out.print("ProFxSignals pips 發生錯誤 :{}"+ e);
                     }
                 }
                 //E-KOJOFOREX 渠道

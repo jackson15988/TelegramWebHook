@@ -2,21 +2,13 @@ package telegram.bo;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.telegram.telegrambots.api.methods.GetFile;
-import org.telegram.telegrambots.api.objects.PhotoSize;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 import telegram.util.OCRAsyncTask;
 import telegram.util.SymbolConfirmation;
 import telegram.util.TextConversion;
 
-
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-
-import org.telegram.telegrambots.api.methods.GetFile;
 
 // + 30 pips 渠道 邏輯
 public class ThirtyPips {
@@ -46,7 +38,7 @@ public class ThirtyPips {
             String symbol = "";
             String direction = "";
             String price = "";
-            String slStr = "";
+            String slTarget = "";
             for (Object object : jsAry) {
                 jsonObj = (JSONObject) jsonObj.parse(object.toString());
                 String lineText = (String) jsonObj.get("LineText");
@@ -71,19 +63,26 @@ public class ThirtyPips {
                     System.out.println("獲取到方向:" + direction);
                     System.out.println("獲取商品:" + symbol);
 
-                } else if (lineText.toUpperCase().contains("TP") || lineText.toUpperCase().contains("rp") ) {
+                } else if (lineText.toUpperCase().contains("TP") || lineText.toUpperCase().contains("rp") || lineText.contains("-rp") ) {
                     lineText = lineText.toUpperCase();
+                    lineText = lineText.substring(lineText.indexOf(":")+1,lineText.length()-1);
 
-                    if (lineText.contains("SI")) {
-                        tpStr = lineText.substring(lineText.indexOf("TP:"), lineText.indexOf("SI:"));
-                        tpStr = TextConversion.priceConversion(tpStr);
+                    if(lineText.contains("30") && lineText.contains("60")){
+                        tpStr = "30-60-120";
+                    }else if(lineText.contains("50") && lineText.contains("70")  && lineText.contains("90")){
 
-                        slStr = lineText.substring(lineText.indexOf("SI:"), lineText.length());
-                        slStr = TextConversion.priceConversion(slStr);
-
-                        System.out.println("獲取TP價格:" + tpStr);
-                        System.out.println("獲取SL價格:" + slStr);
+                    }else if(lineText.contains("40") && lineText.contains("80")){
+                        tpStr = "40-80-160";
                     }
+
+                    System.out.println("獲取TP價格:" + tpStr);
+                }else if(lineText.toUpperCase().contains("SL")){
+                    slTarget = TextConversion.priceConversion(lineText);
+                    //去轉換止損出來的目標價格
+                    BigDecimal bigDecimalValue= new BigDecimal(price);
+                    BigDecimal slPrice = TextConversion.calculateStopLossPrice(Integer.valueOf(slTarget), bigDecimalValue,5);
+                    slTarget = String.valueOf(slPrice);
+                    System.out.println("獲取SL價格:" + slPrice);
                 }
             }
             SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -96,11 +95,11 @@ public class ThirtyPips {
             jsobj.put("direction", direction);
             jsobj.put("price", price);
             jsobj.put("tp", tpStr);
-            jsobj.put("sl", slStr);
+            jsobj.put("sl", slTarget);
             jsobj.put("date", strDate);
-            jsobj.put("strategy", "forex_B");
+            jsobj.put("strategy", "forex_A");
             jsobj.put("status", "0");
-            jsobj.put("remarks", "+30pip");
+            jsobj.put("remarks", "ProFxSignals" + tpStr);
 
             long timeStampSec = System.currentTimeMillis() / 1000;
             String magicNumber = String.format("%010d", timeStampSec);
