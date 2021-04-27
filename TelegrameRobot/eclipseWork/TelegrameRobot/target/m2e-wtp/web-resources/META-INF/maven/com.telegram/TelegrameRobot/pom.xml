@@ -16,7 +16,7 @@
 		<json.version>20160810</json.version>
 		<jsoup.version>1.10.2</jsoup.version>
 		<mysql.version>6.0.6</mysql.version>
-		<commonsio.version>2.5</commonsio.version>
+		<commonsio.version>2.7</commonsio.version>
 	</properties>
 
 	<dependencies>
