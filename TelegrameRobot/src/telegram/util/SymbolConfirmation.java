@@ -63,7 +63,10 @@ public class SymbolConfirmation {
 			returnStr = "XAUUSD";
 		} else if (sybol.contains("CADJPY")) {
 			returnStr = "CADJPY";
+		} else if (sybol.contains("CHFJPY")) {
+		returnStr = "CHFJPY";
 		}
+
 
 		return returnStr;
 
