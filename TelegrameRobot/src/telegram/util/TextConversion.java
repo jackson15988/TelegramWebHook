@@ -371,7 +371,7 @@ public class TextConversion {
 		String price = "";
 		String[] doubSpulit = strMessage.split("([-a-zA-Z]\\s*)++");
 		if(doubSpulit.length != 0) {
-			 price = doubSpulit[1];
+			 price = doubSpulit[doubSpulit.length-1] ;
 			if (price.contains(":")) {
 				price = price.replace(":", " ");
 			}

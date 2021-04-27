@@ -20,6 +20,7 @@ import telegram.vo.ConvertRoomInfo;
 import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,8 +33,8 @@ public class Bot extends TelegramLongPollingBot {
     {
         try {
             if (socket == null) {
-                System.out.print("執行");
-                socket = new Socket("127.0.0.1", 21);
+                System.out.print("執行socket");
+                socket = new Socket("127.0.0.1", 9877);
             }
             out = new PrintWriter(socket.getOutputStream());
             in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
@@ -55,9 +56,9 @@ public class Bot extends TelegramLongPollingBot {
             List<PhotoSize> photos = update.getMessage().getPhoto();
 
             System.out.println(update.getMessage().getFrom().getFirstName() + "#: " + update.getMessage().getText());
-          /*  if (socket == null) {
+            if (socket == null) {
                 try {
-                    socket = new Socket("45.32.49.87", 9877);
+                    socket = new Socket("127.0.0.1", 9877);
                 } catch (UnknownHostException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -65,7 +66,7 @@ public class Bot extends TelegramLongPollingBot {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-            }*/
+            }
 ///
             //投資共享-FOREX/GOLD 黃金群組
             if ("-1001309319906".equals(chatDto.getChatId())) {
@@ -87,6 +88,10 @@ public class Bot extends TelegramLongPollingBot {
                         if (out != null && !sendSocketObj.isEmpty()) {
                             out.println(sendSocketObj.toJSONString());
                             out.flush();
+                            out.close();
+                            socket.close();
+                            socket = null;
+
                         }
                     } catch (Exception e) {
                         System.out.print("ProFxSignals pips 發生錯誤 :{}"+ e);

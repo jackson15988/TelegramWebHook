@@ -5,10 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import telegram.util.OCRAsyncTask;
 import telegram.util.SymbolConfirmation;
 import telegram.util.TextConversion;
+import telegram.vo.MultipOrderDetailVO;
 
-import java.math.BigDecimal;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 // + 30 pips 渠道 邏輯
 public class ThirtyPips {
@@ -33,14 +37,24 @@ public class ThirtyPips {
         if (LineStr != null) {
             jsonObj = (JSONObject) jsonObj.get("TextOverlay");
             jsAry = (JSONArray) jsonObj.get("Lines");
+            JSONObject jsobj = new JSONObject();
+            long timeStampSec = System.currentTimeMillis() / 1000;
+            String magicNumber = String.format("%010d", timeStampSec);
+            magicNumber = magicNumber.replaceFirst("^0*", "");
+            jsobj.put("orderMagicNumber", String.valueOf(magicNumber));
 
-            String tpStr = "";
+            String tpPrice = "";
             String symbol = "";
             String direction = "";
             String price = "";
-            String slTarget = "";
+            String slPrice = "";
+            String tp1 = "";
+            String tp2 = "";
+            String tp3 = "";
+            List<MultipOrderDetailVO> MultipOrderDetailList = new ArrayList();
             for (Object object : jsAry) {
                 jsonObj = (JSONObject) jsonObj.parse(object.toString());
+                MultipOrderDetailVO multipOrderDetailVO = new MultipOrderDetailVO();
                 String lineText = (String) jsonObj.get("LineText");
                 if (lineText.toUpperCase().contains("BUY")) {
                     direction = "0";
@@ -63,53 +77,85 @@ public class ThirtyPips {
                     System.out.println("獲取到方向:" + direction);
                     System.out.println("獲取商品:" + symbol);
 
-                } else if (lineText.toUpperCase().contains("TP") || lineText.toUpperCase().contains("rp") || lineText.contains("-rp") ) {
-                    lineText = lineText.toUpperCase();
-                    lineText = lineText.substring(lineText.indexOf(":")+1,lineText.length()-1);
-
-                    if(lineText.contains("30") && lineText.contains("60")){
-                        tpStr = "30-60-120";
-                    }else if(lineText.contains("50") && lineText.contains("70")  && lineText.contains("90")){
-
-                    }else if(lineText.contains("40") && lineText.contains("80")){
-                        tpStr = "40-80-160";
-                    }
-
-                    System.out.println("獲取TP價格:" + tpStr);
-                }else if(lineText.toUpperCase().contains("SL")){
-                    slTarget = TextConversion.priceConversion(lineText);
-                    //去轉換止損出來的目標價格
-                    BigDecimal bigDecimalValue= new BigDecimal(price);
-                    BigDecimal slPrice = TextConversion.calculateStopLossPrice(Integer.valueOf(slTarget), bigDecimalValue,5);
-                    slTarget = String.valueOf(slPrice);
+                } else if (lineText.contains("Tpl:") || lineText.contains("Tp1:") ) {
+                    lineText = lineText.substring(lineText.indexOf(":") + 1,lineText.length());
+                    tp1 = TextConversion.priceConversion(lineText);
+                    multipOrderDetailVO.setTp(tp1);
+                    multipOrderDetailVO.setTarget("Tp1");
+                    multipOrderDetailVO.setSymbol(symbol);
+                    multipOrderDetailVO.setOrderMagicNumber(magicNumber);
+                    System.out.println("獲取TP1價格:" + tp1);
+                }else if(lineText.contains("Tp2:")){
+                    lineText = lineText.substring(lineText.indexOf(":") + 1,lineText.length());
+                    tp2 = TextConversion.priceConversion(lineText);
+                    multipOrderDetailVO.setTp(tp2);
+                    multipOrderDetailVO.setTarget("Tp2");
+                    multipOrderDetailVO.setSymbol(symbol);
+                    multipOrderDetailVO.setOrderMagicNumber(String.valueOf(Integer.valueOf(magicNumber) + 1) );
+                    System.out.println("獲取TP2價格:" + tp2);
+                } else if(lineText.contains("Tp3:")){
+                    lineText = lineText.substring(lineText.indexOf(":")+1,lineText.length());
+                    tp3 = TextConversion.priceConversion(lineText);
+                    multipOrderDetailVO.setTp(tp3);
+                    multipOrderDetailVO.setTarget("Tp3");
+                    multipOrderDetailVO.setSymbol(symbol);
+                    multipOrderDetailVO.setOrderMagicNumber(String.valueOf(Integer.valueOf(magicNumber) + 2) );
+                    System.out.println("獲取TP3價格:" + tp3);
+               }else if(lineText.toUpperCase().contains("SL")){
+                    lineText = lineText.substring(lineText.indexOf(":")+1,lineText.length());
+                     slPrice = TextConversion.priceConversion(lineText);
                     System.out.println("獲取SL價格:" + slPrice);
+                }
+                if(!objCheckIsNull(multipOrderDetailVO)) {
+                    MultipOrderDetailList.add(multipOrderDetailVO);
                 }
             }
             SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date = new Date();
             String strDate = sdFormat.format(date);
 
-            JSONObject jsobj = new JSONObject();
 
             jsobj.put("symbol", symbol);
             jsobj.put("direction", direction);
             jsobj.put("price", price);
-            jsobj.put("tp", tpStr);
-            jsobj.put("sl", slTarget);
+            jsobj.put("tp", tpPrice);
+            jsobj.put("sl", slPrice);
             jsobj.put("date", strDate);
             jsobj.put("strategy", "forex_A");
             jsobj.put("status", "0");
-            jsobj.put("remarks", "ProFxSignals" + tpStr);
-
-            long timeStampSec = System.currentTimeMillis() / 1000;
-            String magicNumber = String.format("%010d", timeStampSec);
-            magicNumber = magicNumber.replaceFirst("^0*", "");
-            jsobj.put("orderMagicNumber", String.valueOf(magicNumber));
+            jsobj.put("remarks", "ProFxSignals" + tpPrice);
+            jsobj.put("multipOrderDetail", MultipOrderDetailList);
+            jsobj.put("isMultipleChildOrder", "true");
 
             JSONArray jsar = new JSONArray();
             jsar.add(jsobj.toJSONString());
             resultObj.put("result", jsar);
         }
         return resultObj;
+    }
+
+
+    public static boolean objCheckIsNull(Object object){
+        Class clazz = (Class)object.getClass(); // 得到类对象
+        Field fields[] = clazz.getDeclaredFields(); // 得到所有属性
+        boolean flag = true; //定义返回结果，默认为true
+        for(Field field : fields){
+            field.setAccessible(true);
+            Object fieldValue = null;
+            try {
+                fieldValue = field.get(object); //得到属性值
+                Type fieldType =field.getGenericType();//得到属性类型
+                String fieldName = field.getName(); // 得到属性名
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            if(fieldValue != null){  //只要有一个属性值不为null 就返回false 表示对象不为null
+                flag = false;
+                break;
+            }
+        }
+        return flag;
     }
 }
