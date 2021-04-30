@@ -19,6 +19,7 @@ public class ThirtyPips {
 
     public static JSONObject getThirtyPips(String picturePath) {
         JSONObject resultObj = new JSONObject();
+        JSONObject jsobj = new JSONObject();
 
         // 開始OCR
         String ocrStr = null;
@@ -37,7 +38,7 @@ public class ThirtyPips {
         if (LineStr != null) {
             jsonObj = (JSONObject) jsonObj.get("TextOverlay");
             jsAry = (JSONArray) jsonObj.get("Lines");
-            JSONObject jsobj = new JSONObject();
+
             long timeStampSec = System.currentTimeMillis() / 1000;
             String magicNumber = String.format("%010d", timeStampSec);
             magicNumber = magicNumber.replaceFirst("^0*", "");
@@ -126,12 +127,12 @@ public class ThirtyPips {
             jsobj.put("remarks", "ProFxSignals" + tpPrice);
             jsobj.put("multipOrderDetail", MultipOrderDetailList);
             jsobj.put("isMultipleChildOrder", "true");
-
+/*
             JSONArray jsar = new JSONArray();
             jsar.add(jsobj.toJSONString());
-            resultObj.put("result", jsar);
+            resultObj.put("result", jsar);*/
         }
-        return resultObj;
+        return jsobj;
     }
 
 

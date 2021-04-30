@@ -34,7 +34,7 @@ public class Bot extends TelegramLongPollingBot {
         try {
             if (socket == null) {
                 System.out.print("執行socket");
-                socket = new Socket("127.0.0.1", 9877);
+                socket = new Socket("78.141.241.32", 9877);
             }
             out = new PrintWriter(socket.getOutputStream());
             in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
@@ -58,7 +58,7 @@ public class Bot extends TelegramLongPollingBot {
             System.out.println(update.getMessage().getFrom().getFirstName() + "#: " + update.getMessage().getText());
             if (socket == null) {
                 try {
-                    socket = new Socket("127.0.0.1", 9877);
+                    socket = new Socket("78.141.241.32", 9877);
                 } catch (UnknownHostException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

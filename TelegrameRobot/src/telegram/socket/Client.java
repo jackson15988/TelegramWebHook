@@ -25,7 +25,7 @@ public class Client {
 
         String amountlist[] = {"2", "5", "11", "25", "60", "140", "320"};
         // 建立連線指定Ip和埠的socket
-        Socket socket = new Socket("127.0.0.1", 9877);
+        Socket socket = new Socket("78.141.241.32", 9877);
         // 獲取系統標準輸入流
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter out = new PrintWriter(socket.getOutputStream());

@@ -11,7 +11,7 @@ import redis.clients.jedis.JedisShardInfo;
 public class RedisUtil {
 
 	public static void setRedis(String key, JSONObject json) {
-		JedisShardInfo shardInfo = new JedisShardInfo("redis://127.0.0.1:6379/0");// 这里是连接的本地地址和端口
+		JedisShardInfo shardInfo = new JedisShardInfo("redis://78.141.241.32:6379/0");// 这里是连接的本地地址和端口
 		shardInfo.setPassword("asBP43Mg");// 这里是密码
 		Jedis jedis = new Jedis(shardInfo);
 		try {
@@ -29,7 +29,7 @@ public class RedisUtil {
 
 	public static JSONObject getRedis(String key) {
 		JSONObject jsOBj = new JSONObject();
-		JedisShardInfo shardInfo = new JedisShardInfo("redis://127.0.0.1:6379/0");// 这里是连接的本地地址和端口
+		JedisShardInfo shardInfo = new JedisShardInfo("redis://78.141.241.32:6379/0");// 这里是连接的本地地址和端口
 		shardInfo.setPassword("asBP43Mg");// 这里是密码
 		Jedis jedis = new Jedis(shardInfo);
 		try {
